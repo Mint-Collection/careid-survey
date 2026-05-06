@@ -1399,12 +1399,28 @@
       valid = false;
     };
 
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    const phoneRegex = /^0[0-9]{1,2}-[0-9]{3,4}-[0-9]{4}$/;
+
     section.querySelectorAll('.question').forEach(q => {
       // 텍스트/이메일 입력 (subfield 제외, 선택 항목 제외)
       q.querySelectorAll('input[type="text"], input[type="email"]').forEach(input => {
         if (input.closest('.subfield')) return;
-        if (optionalFields.has(input.name)) return;
-        if (!input.value.trim()) markError(q, '필수 항목입니다.');
+        const val = input.value.trim();
+
+        if (optionalFields.has(input.name)) {
+          // 선택 항목이지만 입력된 경우 형식 검증
+          if (input.name === 'q1_phone' && val && !phoneRegex.test(val)) {
+            markError(q, '올바른 전화번호 형식을 입력해주세요. (예: 010-1234-5678)');
+          }
+          return;
+        }
+
+        if (!val) {
+          markError(q, '필수 항목입니다.');
+        } else if (input.type === 'email' && !emailRegex.test(val)) {
+          markError(q, '올바른 이메일 형식을 입력해주세요. (예: name@company.com)');
+        }
       });
 
       // 라디오 그룹
@@ -1428,6 +1444,29 @@
         if (ta.closest('.subfield')) return;
         if (!ta.value.trim()) markError(q, '필수 항목입니다.');
       });
+    });
+
+    // 입력 시 에러 실시간 제거
+    section.querySelectorAll('input, textarea').forEach(field => {
+      const clearError = () => {
+        const q = field.closest('.question');
+        if (!q || !q.classList.contains('error')) return;
+
+        // Q1은 필수 항목 모두 채워졌을 때만 에러 제거
+        const requiredTexts = [...q.querySelectorAll('input[type="text"], input[type="email"]')]
+          .filter(i => !i.closest('.subfield') && !optionalFields.has(i.name));
+        if (requiredTexts.length > 0) {
+          const allFilled = requiredTexts.every(i => i.value.trim() !== '');
+          const emailInput = q.querySelector('input[type="email"]');
+          const emailValid = !emailInput || emailRegex.test(emailInput.value.trim());
+          if (!allFilled || !emailValid) return;
+        }
+
+        q.classList.remove('error');
+        q.querySelectorAll('.q-error').forEach(el => el.remove());
+      };
+      field.addEventListener('input', clearError, { once: false });
+      field.addEventListener('change', clearError, { once: false });
     });
 
     if (firstErrorEl) firstErrorEl.scrollIntoView({ behavior: 'smooth', block: 'center' });
@@ -1514,9 +1553,33 @@
     } catch(e) {}
   }
 
+  // ====== Phone auto-format ======
+  function formatPhone(value) {
+    const digits = value.replace(/\D/g, '').slice(0, 11);
+    if (digits.startsWith('02')) {
+      if (digits.length <= 2) return digits;
+      if (digits.length <= 5) return digits.slice(0,2) + '-' + digits.slice(2);
+      if (digits.length <= 9) return digits.slice(0,2) + '-' + digits.slice(2,5) + '-' + digits.slice(5);
+      return digits.slice(0,2) + '-' + digits.slice(2,6) + '-' + digits.slice(6);
+    } else {
+      if (digits.length <= 3) return digits;
+      if (digits.length <= 7) return digits.slice(0,3) + '-' + digits.slice(3);
+      return digits.slice(0,3) + '-' + digits.slice(3,7) + '-' + digits.slice(7);
+    }
+  }
+
   document.addEventListener("input", saveProgress);
   document.addEventListener("change", saveProgress);
-  window.addEventListener("DOMContentLoaded", loadProgress);
+  window.addEventListener("DOMContentLoaded", () => {
+    loadProgress();
+    const phoneInput = document.querySelector('input[name="q1_phone"]');
+    if (phoneInput) {
+      phoneInput.addEventListener("input", (e) => {
+        const formatted = formatPhone(e.target.value);
+        e.target.value = formatted;
+      });
+    }
+  });
 
   // ====== Data collection ======
   function getStructuredAnswers() {
