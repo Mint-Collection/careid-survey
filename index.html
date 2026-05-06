@@ -778,6 +778,18 @@
     to { transform: rotate(360deg); }
   }
 
+  /* Validation */
+  .question.error {
+    border-color: var(--danger);
+    box-shadow: 0 0 0 3px rgba(240, 68, 82, 0.1);
+  }
+  .q-error {
+    color: var(--danger);
+    font-size: 13px;
+    margin: 12px 0 0 0;
+    font-weight: 500;
+  }
+
   /* Animations */
   @keyframes fadeInUp {
     from { opacity: 0; transform: translateY(8px); }
@@ -1365,7 +1377,65 @@
     window.scrollTo({ top: 0, behavior: "smooth" });
   }
 
+  function validateSection(n) {
+    const section = document.querySelector(`.section[data-section="${n}"]`);
+    let valid = true;
+    let firstErrorEl = null;
+
+    section.querySelectorAll('.q-error').forEach(el => el.remove());
+    section.querySelectorAll('.question').forEach(el => el.classList.remove('error'));
+
+    const optionalFields = new Set(['q1_phone']);
+
+    const markError = (questionEl, msg) => {
+      if (!questionEl.classList.contains('error')) {
+        questionEl.classList.add('error');
+        const err = document.createElement('p');
+        err.className = 'q-error';
+        err.textContent = msg;
+        questionEl.appendChild(err);
+        if (!firstErrorEl) firstErrorEl = questionEl;
+      }
+      valid = false;
+    };
+
+    section.querySelectorAll('.question').forEach(q => {
+      // 텍스트/이메일 입력 (subfield 제외, 선택 항목 제외)
+      q.querySelectorAll('input[type="text"], input[type="email"]').forEach(input => {
+        if (input.closest('.subfield')) return;
+        if (optionalFields.has(input.name)) return;
+        if (!input.value.trim()) markError(q, '필수 항목입니다.');
+      });
+
+      // 라디오 그룹
+      const radioNames = [...new Set([...q.querySelectorAll('input[type="radio"]')].map(r => r.name))];
+      radioNames.forEach(name => {
+        if (!q.querySelector(`input[type="radio"][name="${name}"]:checked`)) {
+          markError(q, '항목을 선택해주세요.');
+        }
+      });
+
+      // 체크박스 그룹
+      const cbNames = [...new Set([...q.querySelectorAll('input[type="checkbox"]')].map(cb => cb.name))];
+      cbNames.forEach(name => {
+        if (!q.querySelector(`input[type="checkbox"][name="${name}"]:checked`)) {
+          markError(q, '하나 이상 선택해주세요.');
+        }
+      });
+
+      // 텍스트영역 (subfield 제외)
+      q.querySelectorAll('textarea').forEach(ta => {
+        if (ta.closest('.subfield')) return;
+        if (!ta.value.trim()) markError(q, '필수 항목입니다.');
+      });
+    });
+
+    if (firstErrorEl) firstErrorEl.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    return valid;
+  }
+
   function nextSection() {
+    if (!validateSection(currentSection)) return;
     saveProgress();
     if (currentSection < TOTAL_SECTIONS) showSection(currentSection + 1);
   }
@@ -1382,6 +1452,7 @@
   }
 
   async function goToSubmit() {
+    if (!validateSection(currentSection)) return;
     saveProgress();
     document.getElementById("survey").classList.remove("active");
     document.getElementById("submitScreen").classList.add("active");
@@ -1394,7 +1465,7 @@
       await fetch(SCRIPT_URL, {
         method: "POST",
         mode: "no-cors",
-        headers: { "Content-Type": "application/json" },
+        headers: { "Content-Type": "text/plain" },
         body: JSON.stringify(payload)
       });
     } catch(e) {
