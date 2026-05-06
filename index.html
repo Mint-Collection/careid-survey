@@ -1446,7 +1446,7 @@
       });
 
       // 기타 선택 시 subfield 필수
-      const etcChecked = q.querySelector('input[value="기타"]:checked');
+      const etcChecked = [...q.querySelectorAll('input:checked')].find(i => i.value === '기타');
       if (etcChecked) {
         const subfieldInput = q.querySelector('.subfield input[type="text"], .subfield textarea');
         if (subfieldInput && !subfieldInput.value.trim()) {
@@ -1472,7 +1472,7 @@
         }
 
         // 기타 선택 시 subfield가 비어있으면 에러 유지
-        const etcChecked = q.querySelector('input[value="기타"]:checked');
+        const etcChecked = [...q.querySelectorAll('input:checked')].find(i => i.value === '기타');
         if (etcChecked) {
           const subfieldInput = q.querySelector('.subfield input[type="text"], .subfield textarea');
           if (subfieldInput && !subfieldInput.value.trim()) return;
@@ -1585,10 +1585,53 @@
     }
   }
 
+  // ====== 기타 subfield 토글 ======
+  function initEtcSubfields() {
+    document.querySelectorAll('.question').forEach(question => {
+      const etcInput = question.querySelector('input[type="radio"][value="기타"], input[type="checkbox"][value="기타"]');
+      if (!etcInput) return;
+
+      const subfield = question.querySelector('.subfield');
+      if (!subfield) return;
+
+      const updateVisibility = () => {
+        const anyEtcChecked = [...question.querySelectorAll('input')].some(i => i.value === '기타' && i.checked);
+        subfield.style.display = anyEtcChecked ? 'block' : 'none';
+        if (!anyEtcChecked) {
+          const input = subfield.querySelector('input, textarea');
+          if (input) input.value = '';
+        }
+      };
+
+      // 기본 숨김
+      subfield.style.display = 'none';
+
+      // 기타 입력에 change 이벤트 연결
+      question.querySelectorAll('input').forEach(input => {
+        if (input.value === '기타') input.addEventListener('change', updateVisibility);
+      });
+
+      // 라디오 전체에도 연결 (기타 해제 감지)
+      question.querySelectorAll('input[type="radio"]').forEach(radio => {
+        radio.addEventListener('change', updateVisibility);
+      });
+
+      // loadProgress 복원 후 상태 반영
+      subfield._updateVisibility = updateVisibility;
+    });
+  }
+
   document.addEventListener("input", saveProgress);
   document.addEventListener("change", saveProgress);
   window.addEventListener("DOMContentLoaded", () => {
     loadProgress();
+    initEtcSubfields();
+
+    // loadProgress로 복원된 기타 선택 반영
+    document.querySelectorAll('.subfield').forEach(sf => {
+      if (sf._updateVisibility) sf._updateVisibility();
+    });
+
     const phoneInput = document.querySelector('input[name="q1_phone"]');
     if (phoneInput) {
       phoneInput.addEventListener("input", (e) => {
