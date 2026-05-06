@@ -83,15 +83,28 @@
     gap: 16px;
   }
   .logo {
-    height: 22px;
-    width: auto;
-    display: block;
+    font-size: 18px;
+    font-weight: 800;
+    letter-spacing: -0.02em;
     color: var(--gray-900);
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    line-height: 1;
   }
-  .logo svg {
-    height: 100%;
-    width: auto;
-    display: block;
+  .logo-mark {
+    font-size: 9px;
+    font-weight: 600;
+    color: var(--gray-500);
+    border: 1px solid var(--gray-400);
+    border-radius: 50%;
+    width: 12px;
+    height: 12px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    margin-left: 2px;
+    line-height: 1;
   }
   .topbar-meta {
     font-size: 12px;
@@ -209,6 +222,114 @@
   .reassurance-text strong {
     color: var(--gray-900);
     font-weight: 600;
+  }
+
+  /* Consent card */
+  .consent-card {
+    background: var(--white);
+    border: 1px solid var(--gray-100);
+    border-radius: var(--radius-lg);
+    padding: 24px;
+    margin-bottom: 20px;
+    box-shadow: var(--shadow-sm);
+  }
+  .consent-title {
+    font-size: 15px;
+    font-weight: 700;
+    color: var(--gray-900);
+    margin-bottom: 18px;
+    padding-bottom: 14px;
+    border-bottom: 1px solid var(--gray-100);
+    letter-spacing: -0.01em;
+  }
+  .consent-section {
+    display: flex;
+    gap: 14px;
+    padding: 10px 0;
+    border-bottom: 1px dashed var(--gray-100);
+  }
+  .consent-section:last-of-type { border-bottom: none; }
+  .consent-section-label {
+    flex-shrink: 0;
+    width: 88px;
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--blue-600);
+    line-height: 1.6;
+    padding-top: 1px;
+  }
+  .consent-section-body {
+    flex: 1;
+    font-size: 13px;
+    line-height: 1.65;
+    color: var(--gray-700);
+  }
+  .consent-check {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-top: 16px;
+    padding: 14px 16px;
+    background: var(--blue-50);
+    border-radius: var(--radius);
+    cursor: pointer;
+    border: 1.5px solid transparent;
+    transition: all 0.15s ease;
+  }
+  .consent-check:hover {
+    border-color: var(--blue-200);
+  }
+  .consent-check input {
+    appearance: none;
+    -webkit-appearance: none;
+    width: 20px;
+    height: 20px;
+    border: 2px solid var(--gray-300);
+    background: var(--white);
+    border-radius: 6px;
+    margin: 0;
+    cursor: pointer;
+    flex-shrink: 0;
+    position: relative;
+    transition: all 0.15s ease;
+  }
+  .consent-check input:checked {
+    border-color: var(--blue-500);
+    background: var(--blue-500);
+  }
+  .consent-check input:checked::after {
+    content: "";
+    position: absolute;
+    top: 2px;
+    left: 5px;
+    width: 5px;
+    height: 9px;
+    border: solid var(--white);
+    border-width: 0 2px 2px 0;
+    transform: rotate(45deg);
+  }
+  .consent-check:has(input:checked) {
+    border-color: var(--blue-500);
+  }
+  .consent-check-text {
+    font-size: 14px;
+    color: var(--gray-800);
+    line-height: 1.5;
+    font-weight: 500;
+  }
+  .consent-check-text strong {
+    color: var(--blue-600);
+    font-weight: 700;
+  }
+
+  @media (max-width: 640px) {
+    .consent-section {
+      flex-direction: column;
+      gap: 4px;
+    }
+    .consent-section-label {
+      width: auto;
+    }
   }
 
   /* ---------- Buttons ---------- */
@@ -675,14 +796,7 @@
 
 <header class="topbar">
   <div class="topbar-inner">
-    <div class="logo" aria-label="CARE ID">
-      <svg viewBox="0 0 200 36" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="careid-title">
-        <title id="careid-title">CARE ID</title>
-        <text x="0" y="28" font-family="-apple-system, BlinkMacSystemFont, 'Pretendard', 'Segoe UI', sans-serif" font-size="32" font-weight="900" letter-spacing="-1" fill="currentColor">CARE ID</text>
-        <circle cx="174" cy="9" r="5" fill="none" stroke="currentColor" stroke-width="1.2"/>
-        <text x="171.5" y="11.5" font-family="-apple-system, BlinkMacSystemFont, 'Pretendard', 'Segoe UI', sans-serif" font-size="6.5" font-weight="600" fill="currentColor">C</text>
-      </svg>
-    </div>
+    <div class="logo" aria-label="CARE ID">CARE ID<span class="logo-mark">©</span></div>
     <div class="topbar-meta">사전 설문</div>
   </div>
 </header>
@@ -719,11 +833,45 @@
   <div class="reassurance">
     <div class="reassurance-icon">i</div>
     <div class="reassurance-text">
-      <strong>안심하셔도 됩니다.</strong> 모든 응답은 윤회(주) 내부 검토 외 용도로 사용되지 않습니다. 자동 저장 기능이 적용되어 있어 작성 중 페이지를 닫으셔도 동일 브라우저에서 이어서 작성하실 수 있습니다.
+      <strong>안심하셔도 됩니다.</strong> 자동 저장 기능이 적용되어 있어 작성 중 페이지를 닫으셔도 동일 브라우저에서 이어서 작성하실 수 있습니다.
     </div>
   </div>
 
-  <button class="btn btn-primary btn-block" onclick="startSurvey()">
+  <div class="consent-card">
+    <div class="consent-title">개인정보 수집·이용 및 비밀 유지 동의</div>
+
+    <div class="consent-section">
+      <div class="consent-section-label">수집 항목</div>
+      <div class="consent-section-body">응답자 성함·직책·이메일·연락처, 회사 운영 환경 및 사업 관련 응답 내용 일체</div>
+    </div>
+
+    <div class="consent-section">
+      <div class="consent-section-label">수집·이용 목적</div>
+      <div class="consent-section-body">CARE ID 도입 검토를 위한 솔루션 설계, 미팅 일정 조율 및 후속 자료 송부</div>
+    </div>
+
+    <div class="consent-section">
+      <div class="consent-section-label">보유 기간</div>
+      <div class="consent-section-body">도입 검토 종료 후 1년 (이후 안전하게 파기). 도입 계약 체결 시 별도 약정에 따름</div>
+    </div>
+
+    <div class="consent-section">
+      <div class="consent-section-label">비밀 유지</div>
+      <div class="consent-section-body">모든 응답은 NDA 수준의 비공개로 처리되며, 윤회(주) 내부 검토진 외 제3자에게 공유되지 않습니다. 비식별·집계화된 인사이트가 산업 분석 자료에 활용될 경우 사전에 별도 협의를 거칩니다.</div>
+    </div>
+
+    <div class="consent-section">
+      <div class="consent-section-label">권리 안내</div>
+      <div class="consent-section-body">본 동의는 거부하실 수 있으며, 거부 시 설문 진행이 어렵습니다. 제출 후에도 rnd@careid.center로 요청하시면 응답 내용 열람·정정·삭제가 가능합니다.</div>
+    </div>
+
+    <label class="consent-check">
+      <input type="checkbox" id="consentCheck" onchange="toggleStart()" />
+      <span class="consent-check-text">위 내용을 확인하였으며, 응답 정보의 수집·이용 및 비밀 유지 조건에 <strong>동의합니다.</strong></span>
+    </label>
+  </div>
+
+  <button class="btn btn-primary btn-block" onclick="startSurvey()" id="startBtn" disabled>
     설문 시작하기
   </button>
 </main>
@@ -1154,26 +1302,18 @@
 <!-- ============ SUBMIT SCREEN ============ -->
 <section class="submit-screen" id="submitScreen">
   <div class="submit-icon">✓</div>
-  <h2>거의 다 왔습니다.</h2>
+  <h2>설문이 완료되었습니다.</h2>
   <p>
-    아래 버튼을 누르면 응답이 윤회(주) <strong style="color:var(--blue-600);">rnd@careid.center</strong>로 전송됩니다. 전송 후 영업일 2~3일 내에 미팅 일정 조율 메일을 보내드립니다.
+    소중한 시간 내어 응답해주셔서 감사합니다. 응답 내용은 윤회(주) 내부에서 안전하게 처리되며, 영업일 2~3일 내에 미팅 일정 조율 메일을 <strong style="color:var(--blue-600);">rnd@careid.center</strong>에서 보내드립니다.
   </p>
 
-  <div class="submit-status" id="submitStatus"></div>
-
   <div class="submit-actions">
-    <button class="btn btn-primary btn-block" onclick="sendSurvey()" id="sendBtn">
-      윤회(주)로 응답 전송하기
-    </button>
-    <button class="btn btn-secondary btn-block" onclick="downloadJSON()">
-      응답 파일 다운로드 (.json)
-    </button>
     <button class="btn btn-ghost btn-block" onclick="restartSurvey()">처음부터 다시 작성</button>
   </div>
 
   <div class="submit-info">
-    <h3>전송이 잘 안 되는 경우</h3>
-    <p>응답 파일을 다운로드하신 뒤 <strong>rnd@careid.center</strong>로 첨부해 보내주시거나, 전송 버튼 후 자동 열리는 메일 앱을 통해 보내주셔도 동일하게 처리됩니다.</p>
+    <h3>다음 단계 안내</h3>
+    <p>응답 내용을 바탕으로 윤회(주) 담당자(다정 CSO)가 직접 검토 후 30분 화상 미팅 일정을 제안드립니다. 추가 문의 사항은 언제든 <strong>rnd@careid.center</strong>로 회신 부탁드립니다.</p>
   </div>
 </section>
 
@@ -1189,22 +1329,28 @@
   const STORAGE_KEY = "careid_survey_v2";
   const RECIPIENT_EMAIL = "rnd@careid.center";
 
-  /* =======================================================================
-   * FORMSPREE 설정 — 다정님이 수정해야 하는 부분
-   * =======================================================================
-   * 1. https://formspree.io 가입 (rnd@careid.center로 가입 권장)
-   * 2. New Form 생성 → form ID 발급 (예: xyzabcde)
-   * 3. 아래 FORMSPREE_ENDPOINT 를 'https://formspree.io/f/{발급받은ID}' 로 교체
-   * 4. Formspree 대시보드에서 "Add a Notification" → rnd@careid.center 추가
-   * 5. 작동 안 하면 자동으로 mailto fallback이 실행됩니다.
-   * ======================================================================= */
-  const FORMSPREE_ENDPOINT = "https://formspree.io/f/YOUR_FORM_ID";
-  const FORMSPREE_ENABLED = false; // 가입 후 form ID 교체했다면 true 로 변경
-
   let currentSection = 1;
+
+  // ====== Consent gate ======
+  function toggleStart() {
+    const checked = document.getElementById("consentCheck").checked;
+    document.getElementById("startBtn").disabled = !checked;
+  }
 
   // ====== Section navigation ======
   function startSurvey() {
+    const checked = document.getElementById("consentCheck").checked;
+    if (!checked) {
+      alert("개인정보 수집·이용 및 비밀 유지 동의가 필요합니다.");
+      return;
+    }
+    // Record consent timestamp for audit trail
+    try {
+      localStorage.setItem("careid_consent", JSON.stringify({
+        agreed: true,
+        agreedAt: new Date().toISOString()
+      }));
+    } catch(e) {}
     document.getElementById("cover").style.display = "none";
     document.getElementById("survey").classList.add("active");
     showSection(1);
@@ -1235,11 +1381,25 @@
     }
   }
 
-  function goToSubmit() {
+  async function goToSubmit() {
     saveProgress();
     document.getElementById("survey").classList.remove("active");
     document.getElementById("submitScreen").classList.add("active");
     window.scrollTo({ top: 0, behavior: "smooth" });
+
+    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwMmYrWDQVv-i1NArkvmByrkwVh0upmwtlhgL-bu0ghY-Q3frdPtSOxp_3q8gJXgrz5Zw/exec";
+    const payload = getStructuredAnswers();
+
+    try {
+      await fetch(SCRIPT_URL, {
+        method: "POST",
+        mode: "no-cors",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload)
+      });
+    } catch(e) {
+      console.error("전송 실패:", e);
+    }
   }
 
   function updateProgress() {
@@ -1318,144 +1478,13 @@
     };
   }
 
-  function answersToReadableText(payload) {
-    const a = payload.answers;
-    const labels = {
-      "q1_name": "Q1. 응답자 성함",
-      "q1_role": "Q1. 직책 / 부서",
-      "q1_email": "Q1. 이메일",
-      "q1_phone": "Q1. 연락처",
-      "q2": "Q2. 협업 인원",
-      "q2_detail": "Q2. 협업 부서·직책",
-      "q3": "Q3. 의사결정 프로세스",
-      "q3_detail": "Q3. 추가 설명",
-      "q4": "Q4. 도입 결정 목표 시점",
-      "q5": "Q5. 예산 단계",
-      "q5_detail": "Q5. 정부지원사업명",
-      "q6": "Q6. 도입 계기",
-      "q6_other": "Q6. 기타",
-      "q7": "Q7. 가장 시급한 사안",
-      "q8": "Q8. 1년 내 핵심 목표",
-      "q9": "Q9. 도입을 망설이게 하는 요소",
-      "q9_other": "Q9. 기타",
-      "q10": "Q10. 주요 수출 시장",
-      "q10_other": "Q10. 기타",
-      "q11_type": "Q11. 바이어 유형",
-      "q11_count": "Q11. 거래 바이어 수",
-      "q11_named": "Q11. 대표 바이어",
-      "q12": "Q12. 데이터 제출 요청 빈도",
-      "q12_detail": "Q12. 요청 형태",
-      "q13": "Q13. EU ESPR/DPP 언급 여부",
-      "q14": "Q14. 데이터 교환 방식",
-      "q14_other": "Q14. 기타",
-      "q15": "Q15. 보유 인증",
-      "q15_other": "Q15. 기타",
-      "q16": "Q16. 연간 TC 발행 건수",
-      "q17": "Q17. 인증 데이터 관리 방식",
-      "q17_detail": "Q17. 솔루션명",
-      "q18": "Q18. 인증 갱신 시 어려움",
-      "q18_other": "Q18. 기타",
-      "q19": "Q19. ERP/생산관리 시스템",
-      "q19_detail": "Q19. 버전·도입 시점",
-      "q20": "Q20. lot/roll ID 체계",
-      "q20_detail": "Q20. 예시 형식",
-      "q21": "Q21. 1차 가공처 데이터 교환",
-      "q22": "Q22. 운영 인력 환경",
-      "q23": "Q23. 가장 궁금한 점",
-      "q24": "Q24. 비교 검토 중인 솔루션",
-      "q24_detail": "Q24. 솔루션명",
-      "q25": "Q25. 자유 의견"
-    };
-    let text = `[CARE ID 도입 검토 사전 설문 응답]\n`;
-    text += `회사: ${payload.meta.company}\n`;
-    text += `수신: ${payload.meta.recipient}\n`;
-    text += `응답일시: ${payload.meta.submittedAt}\n\n`;
-    text += `========================================\n\n`;
-    Object.entries(labels).forEach(([key, label]) => {
-      const val = a[key];
-      if (val === undefined || val === "" || (Array.isArray(val) && val.length === 0)) return;
-      const display = Array.isArray(val) ? val.join(", ") : val;
-      text += `■ ${label}\n${display}\n\n`;
-    });
-    return text;
-  }
-
-  // ====== Submit handlers ======
-  function showStatus(type, message) {
-    const el = document.getElementById("submitStatus");
-    el.className = "submit-status show " + type;
-    el.innerHTML = message;
-  }
-
-  async function sendSurvey() {
-    const btn = document.getElementById("sendBtn");
-    const payload = getStructuredAnswers();
-    const readableText = answersToReadableText(payload);
-
-    btn.disabled = true;
-    btn.innerHTML = '<span class="spinner"></span>전송 중...';
-    showStatus("loading", "응답을 윤회(주)로 전송하고 있습니다...");
-
-    // Try Formspree first
-    if (FORMSPREE_ENABLED && FORMSPREE_ENDPOINT && !FORMSPREE_ENDPOINT.includes("YOUR_FORM_ID")) {
-      try {
-        const response = await fetch(FORMSPREE_ENDPOINT, {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            "Accept": "application/json"
-          },
-          body: JSON.stringify({
-            _subject: "[CARE ID 사전 설문] (주)삼원일모 응답 도착",
-            _replyto: payload.answers.q1_email || "",
-            company: payload.meta.company,
-            submittedAt: payload.meta.submittedAt,
-            readableResponse: readableText,
-            rawData: JSON.stringify(payload, null, 2)
-          })
-        });
-
-        if (response.ok) {
-          showStatus("success", "✓ 응답이 정상적으로 전송되었습니다. 곧 윤회(주)에서 미팅 일정 조율 메일을 보내드립니다.");
-          btn.innerHTML = "✓ 전송 완료";
-          btn.style.background = "var(--blue-600)";
-          localStorage.removeItem(STORAGE_KEY);
-          return;
-        }
-        throw new Error("Formspree responded " + response.status);
-      } catch (err) {
-        console.warn("Formspree failed, falling back to mailto:", err);
-        // fall through to mailto
-      }
-    }
-
-    // Fallback: mailto
-    const subject = encodeURIComponent("[CARE ID 사전 설문] 응답 송부 — (주)삼원일모");
-    const body = encodeURIComponent(readableText);
-    window.location.href = `mailto:${RECIPIENT_EMAIL}?subject=${subject}&body=${body}`;
-    showStatus("success", "✓ 메일 앱이 열렸습니다. 메일 앱에서 <strong>전송</strong> 버튼을 눌러주시면 응답이 윤회(주)에 도달합니다.");
-    btn.disabled = false;
-    btn.innerHTML = "다시 전송하기";
-  }
-
-  function downloadJSON() {
-    const payload = getStructuredAnswers();
-    const blob = new Blob([JSON.stringify(payload, null, 2)], { type: "application/json" });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement("a");
-    const stamp = new Date().toISOString().slice(0,10);
-    a.href = url;
-    a.download = `careid_survey_${stamp}.json`;
-    document.body.appendChild(a);
-    a.click();
-    document.body.removeChild(a);
-    URL.revokeObjectURL(url);
-  }
-
   function restartSurvey() {
     if (!confirm("작성하신 모든 응답을 지우고 처음부터 다시 시작합니다. 계속하시겠습니까?")) return;
     localStorage.removeItem(STORAGE_KEY);
+    localStorage.removeItem("careid_consent");
     document.getElementById("surveyForm").reset();
+    document.getElementById("consentCheck").checked = false;
+    document.getElementById("startBtn").disabled = true;
     document.getElementById("submitScreen").classList.remove("active");
     document.getElementById("survey").classList.remove("active");
     document.getElementById("cover").style.display = "block";
