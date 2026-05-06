@@ -1444,6 +1444,15 @@
         if (ta.closest('.subfield')) return;
         if (!ta.value.trim()) markError(q, '필수 항목입니다.');
       });
+
+      // 기타 선택 시 subfield 필수
+      const etcChecked = q.querySelector('input[value="기타"]:checked');
+      if (etcChecked) {
+        const subfieldInput = q.querySelector('.subfield input[type="text"], .subfield textarea');
+        if (subfieldInput && !subfieldInput.value.trim()) {
+          markError(q, '기타 선택 시 내용을 입력해주세요.');
+        }
+      }
     });
 
     // 입력 시 에러 실시간 제거
@@ -1460,6 +1469,13 @@
           const emailInput = q.querySelector('input[type="email"]');
           const emailValid = !emailInput || emailRegex.test(emailInput.value.trim());
           if (!allFilled || !emailValid) return;
+        }
+
+        // 기타 선택 시 subfield가 비어있으면 에러 유지
+        const etcChecked = q.querySelector('input[value="기타"]:checked');
+        if (etcChecked) {
+          const subfieldInput = q.querySelector('.subfield input[type="text"], .subfield textarea');
+          if (subfieldInput && !subfieldInput.value.trim()) return;
         }
 
         q.classList.remove('error');
